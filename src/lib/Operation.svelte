@@ -20,21 +20,29 @@
 </script>
 
 <div id="operation-view">
-  <label for="range">座標追加倍率</label>
+  <div>
+    <label for="range"
+      >座標追加倍率<br />
+      <strong>{$increaseRate}x</strong></label
+    >
+  </div>
   <input type="range" id="range" bind:value={$increaseRate} min="2" max="10" />
-  {$increaseRate}x　
-  <input type="button" value="座標追加" on:click={runIncrease} />
-  <input type="button" value="ダウンロード" on:click={download} />
+  <div>
+    <input type="button" value="座標追加" on:click={runIncrease} />
+  </div>
+  <div>
+    <input type="button" value="GPXダウンロード" on:click={download} />
+  </div>
 </div>
 
 <style>
   #operation-view {
     position: absolute;
-    bottom: 0;
-    left: 2em;
+    top: 6em;
+    right: 0;
     z-index: 10000;
-    background: hsla(0, 0%, 80%, 0.5);
-    padding: 0.2em 1em;
+    background: hsla(170, 30%, 80%, 0.8);
+    padding: 0.4em 1em;
     vertical-align: middle;
   }
 </style>
