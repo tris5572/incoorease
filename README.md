@@ -1,47 +1,54 @@
-# Svelte + TS + Vite
+# Incoorease
 
-This template should help get you started developing with Svelte and TypeScript in Vite.
+[Incoorease](https://tris5572.github.io/incoorease/)は、GPXファイルの座標を増やすWebアプリです。
 
-## Recommended IDE Setup
+自転車に乗る際にサイコン（サイクルコンピュータ）でナビをするとき、一部の機種では座標が間引かれて正確なルートをナビゲーションできないことがあります。そんな場合、このアプリで座標を増やしたGPXファイルを使えば、改善する可能性があります。
 
-[VS Code](https://code.visualstudio.com/) + [Svelte](https://marketplace.visualstudio.com/items?itemName=svelte.svelte-vscode).
+名前の由来は Increase (増やす) + Coordinate (座標) です。
 
-## Need an official Svelte framework?
+# 使い方
 
-Check out [SvelteKit](https://github.com/sveltejs/kit#readme), which is also powered by Vite. Deploy anywhere with its serverless-first approach and adapt to various platforms, with out of the box support for TypeScript, SCSS, and Less, and easily-added support for mdsvex, GraphQL, PostCSS, Tailwind CSS, and more.
+1. **[Ride with GPS](https://ridewithgps.com/)** でルートを作り、**GPXファイル**を書き出す。
+2. [このWebアプリ Incoorease ](https://tris5572.github.io/incoorease/)をWebブラウザで開く。
+   1. GPXファイルをドラッグ&ドロップして開く。
+   2. 倍率を指定して座標追加を行う。（5倍くらいが目安）
+   3. 座標が追加されたGPXファイルをダウンロードする。
+3. サイコンにGPXファイルを転送し、ナビゲーションする。
 
-## Technical considerations
+## 制限事項
 
-**Why use this over SvelteKit?**
+今はまだとりあえず作った程度の段階なので、現時点では以下のような制限があります。
 
-- It brings its own routing solution which might not be preferable for some users.
-- It is first and foremost a framework that just happens to use Vite under the hood, not a Vite app.
+- **Ride with GPS**で作成された**GPXファイル**のみ動作確認済み。
+  - ファイル構造を決め打ちしたコードになっているため。
+- 読み込めるファイルは1つのみ。
+- 増やす座標は近似値。
+  - ただし実用的には問題なし。
 
-This template contains as little as possible to get started with Vite + TypeScript + Svelte, while taking into account the developer experience with regards to HMR and intellisense. It demonstrates capabilities on par with the other `create-vite` templates and is a good starting point for beginners dipping their toes into a Vite + Svelte project.
+# モチベーション
 
-Should you later need the extended capabilities and extensibility provided by SvelteKit, the template has been structured similarly to SvelteKit so that it is easy to migrate.
+自分のサイクリング体験を改善するために作成しました。
 
-**Why `global.d.ts` instead of `compilerOptions.types` inside `jsconfig.json` or `tsconfig.json`?**
+一部のサイコン、例えば [iGPSPORT iGS630](https://www.igpsport.jp/igs630) では、予め読み込ませた経路データを使用したナビゲーションを行うとき、「経路データが一定距離より長い場合は一定の割合で座標を間引く」ような処理を行っているようです。これは座標間隔が狭い経路データ（例えば実走によりサイコンで取得したデータ）ならばほぼ問題ありませんが、Ride with GPSで作成したような座標間隔が長いデータが間引かれると、曲がり角やカーブの経路が鈍ってしまい、道路ではないようなところを通る案内になり、まともなナビが行われなくなります。
 
-Setting `compilerOptions.types` shuts out all other types not explicitly listed in the configuration. Using triple-slash references keeps the default TypeScript setting of accepting type information from the entire workspace, while also adding `svelte` and `vite/client` type information.
+「ふむ、間引かれるのなら予め座標を増やしておけば良いのでは？」という考えで作成したのがこのアプリです。Ride with GPSで書き出されたGPXファイルに対して、座標の数が指定した追加倍率になるよう、座標間に新たな座標を挿入します。
 
-**Why include `.vscode/extensions.json`?**
+## 補足
 
-Other templates indirectly recommend extensions via the README, but this file allows VS Code to prompt the user to install the recommended extension upon opening the project.
+作者が使っている iGPSPORT iGS630 のファームウェアバージョンv1.43（2023年2月頃）では、約100kmの経路データに対して約9割程度の座標を間引く動作になっているように見えます。このとき、座標追加倍率を**5倍**くらいにしておけば、問題なくナビゲーションされます。
 
-**Why enable `allowJs` in the TS template?**
+間引き動作が距離によって変わることもあり得るので、ダメなケースがあるかもしれません。また、ファームウェアのバージョンアップにより
 
-While `allowJs: false` would indeed prevent the use of `.js` files in the project, it does not prevent the use of JavaScript syntax in `.svelte` files. In addition, it would force `checkJs: false`, bringing the worst of both worlds: not being able to guarantee the entire codebase is TypeScript, and also having worse typechecking for the existing JavaScript. In addition, there are valid use cases in which a mixed codebase may be relevant.
+# 採用技術
 
-**Why is HMR not preserving my local component state?**
+## フレームワーク：Svelte
 
-HMR state preservation comes with a number of gotchas! It has been disabled by default in both `svelte-hmr` and `@sveltejs/vite-plugin-svelte` due to its often surprising behavior. You can read the details [here](https://github.com/rixo/svelte-hmr#svelte-hmr).
+アプリケーションフレームワークとして、Svelteを採用しています。単純なWebアプリなので、SvelteKitではなく素のSvelteを使用しています。
 
-If you have state that's important to retain within a component, consider creating an external store which would not be replaced by HMR.
+## 地図表示：Leaflet、地図タイル：国土地理院タイル
 
-```ts
-// store.ts
-// An extremely simple external store
-import { writable } from 'svelte/store'
-export default writable(0)
-```
+オープンに使える定番の組み合わせです。
+
+## デプロイ：GitHub Pages
+
+静的サイトなのでGitHub Pagesにホスティングしています。リポジトリにプッシュすれば自動的に更新された内容がデプロイされるようにGitHub Actionsを構築しています。
