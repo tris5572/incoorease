@@ -2,7 +2,7 @@
   import * as L from "leaflet";
   import "leaflet/dist/leaflet.css";
   import { onMount } from "svelte";
-  import { drawTrack } from "../scripts/stores";
+  import { drawTrack, fitFlag } from "../scripts/stores";
 
   const LINE_OPTIONS = {
     color: "red",
@@ -68,20 +68,20 @@
       .addTo(map);
   }
 
-  /// 座標データが更新されたら、表示を更新する。
+  /**
+   * 座標データが更新されたら、表示を更新する。
+   */
   $: {
     if (map != null) {
       updateTrackView();
 
-      // 軌跡に合わせる。LayerGroup では getBounds() できないので迂遠な方法を取っている。
-      if ($drawTrack.length != 0) {
-        const bounds = L.latLngBounds($drawTrack[0], $drawTrack[0]);
-        for (const p of $drawTrack) {
-          bounds.extend(p);
-        }
-        map.fitBounds(bounds);
+      // 軌跡全体を表示。
+      if ($fitFlag === true) {
+        fitBounds();
+        $fitFlag = false;
       }
     }
+
     $drawTrack;
   }
 
@@ -97,6 +97,20 @@
     for (const p of $drawTrack) {
       let circle = L.circleMarker(p, POINT_OPTIONS);
       circle.addTo(trackLayer);
+    }
+  }
+
+  /**
+   * 軌跡全体を表示するように拡大縮小する。
+   */
+  function fitBounds() {
+    // LayerGroup では getBounds() できないので、全ポイントの位置を見えるという迂遠な方法を取っている。
+    if ($drawTrack.length != 0) {
+      const bounds = L.latLngBounds($drawTrack[0], $drawTrack[0]);
+      for (const p of $drawTrack) {
+        bounds.extend(p);
+      }
+      map.fitBounds(bounds);
     }
   }
 </script>

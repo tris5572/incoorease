@@ -16,6 +16,11 @@ export const sourceGpx = writable("");
  */
 export const increaseRate = writable(5);
 
+/**
+ * 軌跡に合わせて拡大縮小するかどうかのフラグ。
+ */
+export const fitFlag = writable(false);
+
 ////////////////////////////////////////////////////////////////////////////////////////
 
 export function getSourceGpx(): string {
@@ -27,9 +32,10 @@ export function getSourceGpx(): string {
 /**
  * 新しいGPXファイルへ更新する。
  * 渡された文字列がGPXでないような場合は何もしない。
- * @param gpx
+ * @param gpx GPXファイルの文字列
+ * @param fit 軌跡に合わせて拡大縮小するかどうかのフラグ
  */
-export function changeGpx(gpx: string) {
+export function changeGpx(gpx: string, fit?: boolean) {
   if (!isGpx(gpx)) {
     return;
   }
@@ -38,6 +44,10 @@ export function changeGpx(gpx: string) {
   const latlng = latLngFromGpx(gpx);
   if (latlng != null) {
     drawTrack.set(latlng);
+
+    if (fit != undefined) {
+      fitFlag.set(true);
+    }
   }
 }
 

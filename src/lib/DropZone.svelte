@@ -63,14 +63,7 @@
    * @param file
    */
   async function readFile(file: File) {
-    // console.log("readFile()");
-    // console.log(await file.text());
-
-    changeGpx(await file.text());
-    // const latlng = latLngFromGpx(await file.text());
-    // if (latlng != null) {
-    //   drawTrack.set(latlng);
-    // }
+    changeGpx(await file.text(), true);
   }
 </script>
 
