@@ -1,4 +1,6 @@
-/// GPXファイルを色々と扱うスクリプト。
+/**
+ * GPXファイルを色々と扱うスクリプト。
+ */
 
 import { XMLBuilder, XMLParser } from "fast-xml-parser";
 import type { LatLngExpression } from "leaflet";
@@ -89,6 +91,7 @@ export function isGpx(gpx: string): boolean {
 
 /**
  * GPXファイルの座標数を増やす。
+ * 厳密に言えば追加分で軌跡の形は変わっているが、実用的には問題ない。
  * @param gpx GPXファイルの文字列
  * @param rate 増加率。2なら座標数が2倍になる。
  * @returns 増加したGPXの文字列。
@@ -111,7 +114,7 @@ export function runGpxIncrease(gpx: string, rate: number): string {
       continue;
     }
 
-    // 差分を計算
+    // 差分を計算する
     const lat = Number(trkpts[i]["@_lat"]);
     const latPrev = Number(prev["@_lat"]);
     const latDiff = lat - latPrev;
@@ -122,12 +125,14 @@ export function runGpxIncrease(gpx: string, rate: number): string {
     const elePrev = Number(prev["ele"]);
     const eleDiff = ele - elePrev;
 
-    // 追加
+    // 追加。緯度経度は小数点以下5桁、標高は小数点以下2桁で四捨五入。
     for (let a = 1; a < rate; a++) {
       const obj = {};
-      obj["@_lat"] = latPrev + (latDiff / rate) * a;
-      obj["@_lon"] = lonPrev + (lonDiff / rate) * a;
-      obj["ele"] = elePrev + (eleDiff / rate) * a;
+      obj["@_lat"] =
+        Math.round((latPrev + (latDiff / rate) * a) * 100000) / 100000;
+      obj["@_lon"] =
+        Math.round((lonPrev + (lonDiff / rate) * a) * 100000) / 100000;
+      obj["ele"] = Math.round((elePrev + (eleDiff / rate) * a) * 100) / 100;
       outTrkpts.push(obj);
     }
 
