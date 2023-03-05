@@ -1,5 +1,10 @@
 <script lang="ts">
-  import { getSourceGpx, increaseRate, runIncrease } from "../scripts/stores";
+  import {
+    getSourceGpx,
+    increaseRate,
+    pointsCount,
+    runIncrease,
+  } from "../scripts/stores";
 
   /**
    * 生成したGPXファイルをダウンロードさせる。
@@ -30,6 +35,7 @@
   <div>
     <input type="button" value="座標追加" on:click={runIncrease} />
   </div>
+  座標数: {$pointsCount}
   <div>
     <input type="button" value="GPXダウンロード" on:click={download} />
   </div>

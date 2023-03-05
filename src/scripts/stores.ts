@@ -1,4 +1,4 @@
-import { get, writable } from "svelte/store";
+import { derived, get, writable } from "svelte/store";
 import { isGpx, latLngFromGpx, runGpxIncrease } from "./gpx";
 
 /**
@@ -20,6 +20,18 @@ export const increaseRate = writable(5);
  * 軌跡に合わせて拡大縮小するかどうかのフラグ。
  */
 export const fitFlag = writable(false);
+
+/**
+ * 座標数
+ */
+export const pointsCount = derived(sourceGpx, ($sourceGpx) => {
+  const v = latLngFromGpx($sourceGpx);
+  if (v == undefined) {
+    return 0;
+  } else {
+    return v.length;
+  }
+});
 
 ////////////////////////////////////////////////////////////////////////////////////////
 
